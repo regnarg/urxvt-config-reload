@@ -18,6 +18,27 @@ font is planned.
 
 Example usage scripts might be added later.
 
+## Dependencies
+
+  * urxvt (obviously)
+  * Perl ≥ 5.20 (could be easily fixed to work with more ancient
+    versions if needed)
+  * AnyEvent
+  * Linux::FD
+  * common::sense
+
+You can install the needed packages with CPAN:
+
+    sudo cpan AnyEvent Linux::FD common::sense
+
 ## Installation
 
-See https://github.com/muennich/urxvt-perls#installation
+Copy the files into `~/.urxvt/ext/`. Add `config-reload` to the
+`URxvt.perl-ext-common` option in `Xresources`. E.g.:
+
+    URxvt.perl-ext-common: default,clipboard,...,config-reload
+
+**Do not** add the `config-print` extension there!
+
+See https://github.com/muennich/urxvt-perls#installation for alternative
+installation methods (system-wide etc.).
