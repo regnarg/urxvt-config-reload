@@ -1,0 +1,14 @@
+#! perl
+
+use v5.22;
+use common::sense;
+
+our @colors = ( qw( background foreground cursor mouse_background mouse_foreground highlight border ),
+                map { "color$_" } 0..15  );
+
+sub on_start {
+    for (@colors) {
+        say "$_: " . $TERM->x_resource($_);
+    }
+    exit;
+}

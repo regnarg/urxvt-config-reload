@@ -1,0 +1,72 @@
+#! perl
+#
+use v5.20;
+use common::sense;
+
+use AnyEvent;
+use Linux::FD qw(signalfd);
+use POSIX;
+use File::Basename qw(dirname);
+
+my $sigset = POSIX::SigSet->new(&POSIX::SIGUSR1);
+sigprocmask(SIG_BLOCK, $sigset);
+my $sigfd = signalfd($sigset);
+my $libdir = dirname(__FILE__);
+
+our @terms = ();
+our @colors = ( qw( background foreground cursor mouse_background mouse_foreground highlight border ),
+                map { "color$_" } 0..15 );
+
+sub reload_all {
+    my @lines = `urxvt --perl-lib $libdir -pe config-print 2>&1`;
+    my %clrmap;
+    for (@lines) {
+        $clrmap{$1} = $2 if (/(.*?): (.*)/);
+    }
+    my $cmd = "";
+    my $i = 0;
+    for (@colors) {
+        my $key = "666";
+        given ($_) {
+            # Codes adapted from https://github.com/sos4nt/dynamic-colors/blob/master/bin/dynamic-colors
+            $key = "4;$1" when (/color(\d+)/);
+            $key = 10 when "foreground";
+            $key = 11 when "background";
+            $key = 12 when "cursor";
+            $key = 13 when "mouse_foreground";
+            $key = 14 when "mouse_background";
+            $key = 17 when "highlight";
+            $key = 708 when "border";
+        }
+        my $val = $clrmap{$_};
+        $cmd .= "\e]$key;$val\a";
+    }
+    say "CMD: " . ($cmd =~ s/\e/\\e/gr =~ s/\a/\\a/gr);
+    for (@terms) {
+        $_->cmd_parse($cmd);
+    }
+}
+
+our $watch = AnyEvent->io (
+             fh   => $sigfd, # which file handle to check
+             poll => "r",     # which event to wait for ("r"ead data)
+             cb   => sub {    # what callback to execute
+                 sysread $sigfd, my $dummy, 4096;
+                 reload_all;
+             }
+          );
+
+sub on_start {
+    my ($ext) = @_;
+    say "START ext=$ext TERM=$TERM";
+    push @terms, $TERM;
+    ();
+}
+
+sub on_destroy {
+    my ($ext) = @_;
+    say "END ext=$ext TERM=$TERM";
+    @terms = grep { $_ != $TERM } @terms;
+    if (!@terms) { undef $watch; }
+    ();
+}
