@@ -1,5 +1,5 @@
 #! perl
-#
+
 use v5.20;
 use common::sense;
 
@@ -41,7 +41,7 @@ sub reload_all {
         my $val = $clrmap{$_};
         $cmd .= "\e]$key;$val\a";
     }
-    say "CMD: " . ($cmd =~ s/\e/\\e/gr =~ s/\a/\\a/gr);
+    # warn "CMD: " . ($cmd =~ s/\e/\\e/gr =~ s/\a/\\a/gr);
     for (@terms) {
         $_->cmd_parse($cmd);
     }
@@ -58,14 +58,14 @@ our $watch = AnyEvent->io (
 
 sub on_start {
     my ($ext) = @_;
-    say "START ext=$ext TERM=$TERM";
+    # warn "START ext=$ext TERM=$TERM";
     push @terms, $TERM;
     ();
 }
 
 sub on_destroy {
     my ($ext) = @_;
-    say "END ext=$ext TERM=$TERM";
+    # warn "END ext=$ext TERM=$TERM";
     @terms = grep { $_ != $TERM } @terms;
     if (!@terms) { undef $watch; }
     ();
