@@ -1,7 +1,7 @@
 # `urxvt` configuration reload
 
 This plugin allows you to reload `urxvt` configuration at runtime
-by sending `SIGUSR1` to the `urxvt` process.
+by sending `SIGHUP` to the `urxvt` process.
 
 ## What can be reloaded?
 

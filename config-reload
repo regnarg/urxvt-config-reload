@@ -8,7 +8,7 @@ use Linux::FD qw(signalfd);
 use POSIX;
 use File::Basename qw(dirname);
 
-my $sigset = POSIX::SigSet->new(&POSIX::SIGUSR1);
+my $sigset = POSIX::SigSet->new(&POSIX::SIGHUP);
 sigprocmask(SIG_BLOCK, $sigset);
 my $sigfd = signalfd($sigset);
 my $libdir = dirname(__FILE__);
