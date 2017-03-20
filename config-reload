@@ -14,19 +14,18 @@ my $sigfd = signalfd($sigset);
 my $libdir = dirname(__FILE__);
 
 our @terms = ();
-our @colors = ( qw( background foreground cursor mouse_background mouse_foreground highlight border ),
-                map { "color$_" } 0..15 );
 
 sub reload_all {
     my @lines = `urxvt --perl-lib $libdir -pe config-print 2>&1`;
-    my %clrmap;
+    my %resource;
     for (@lines) {
-        $clrmap{$1} = $2 if (/(.*?): (.*)/);
+        $resource{$1} = $2 if (/(.*?): (.*)/);
     }
     my $cmd = "";
     my $i = 0;
-    for (@colors) {
-        my $key = "666";
+RESOURCE:
+    for (keys %resource) {
+        my $key;
         given ($_) {
             # Codes adapted from https://github.com/sos4nt/dynamic-colors/blob/master/bin/dynamic-colors
             $key = "4;$1" when (/color(\d+)/);
@@ -37,8 +36,16 @@ sub reload_all {
             $key = 14 when "mouse_background";
             $key = 17 when "highlight";
             $key = 708 when "border";
+            $key = 710 when "font";
+            when ("geometry") {
+                if (my ($col, $row) = $resource{$_} =~ /(\d+)x(\d+)/) {
+                    $cmd .= "\e[8;${row};${col}t";
+                }
+                next RESOURCE;
+            }
+            default { next RESOURCE }
         }
-        my $val = $clrmap{$_};
+        my $val = $resource{$_};
         $cmd .= "\e]$key;$val\a";
     }
     # warn "CMD: " . ($cmd =~ s/\e/\\e/gr =~ s/\a/\\a/gr);

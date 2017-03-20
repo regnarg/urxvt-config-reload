@@ -5,8 +5,7 @@ by sending `SIGHUP` to the `urxvt` process.
 
 ## What can be reloaded?
 
-Currently only color settings are reloaded, support for changing
-font is planned.
+Currently only color, font and geometry settings are reloaded.
 
 ## Why?
 
