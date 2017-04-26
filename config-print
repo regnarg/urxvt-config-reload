@@ -6,7 +6,7 @@ use common::sense;
 our @resources = qw(
     background foreground cursor
     mouse_background mouse_foreground
-    highlight border
+    highlight borderColor
     font geometry
     ),
     map { "color$_" } 0..15;
