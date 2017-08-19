@@ -3,13 +3,15 @@
 use v5.20;
 use common::sense;
 
-our @resources = qw(
-    background foreground cursor
-    mouse_background mouse_foreground
-    highlight border
-    font geometry
-    ),
-    map { "color$_" } 0..15;
+our @resources = (
+      qw(
+          background foreground cursor
+          mouse_background mouse_foreground
+          highlight border
+          font geometry
+      ),
+      map { "color$_" } 0..15
+    );
 
 sub on_start {
     for (@resources) {
