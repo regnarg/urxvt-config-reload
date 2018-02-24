@@ -14,8 +14,17 @@ our @resources = (
     );
 
 sub on_start {
+    my %fallbacks = (
+        border => "background",
+        cursor => "foreground");
+
     for (@resources) {
-        say "$_: " . $TERM->x_resource($_);
+        my $val = $TERM->x_resource($_);
+        my $default = $TERM->x_resource($fallbacks{$_});
+        if (not $val and $default){
+            $val = $default
+        }
+        say "$_: " . $val;
     }
     exit;
 }
