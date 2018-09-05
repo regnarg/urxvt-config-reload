@@ -31,11 +31,11 @@ RESOURCE:
             $key = "4;$1" when (/color(\d+)/);
             $key = 10 when "foreground";
             $key = 11 when "background";
-            $key = 12 when "cursor";
-            $key = 13 when "mouse_foreground";
-            $key = 14 when "mouse_background";
+            $key = 12 when "cursorColor";
+            $key = 13 when "pointerColor2";
+            $key = 14 when "pointerColor";
             $key = 17 when "highlight";
-            $key = 708 when "border";
+            $key = 708 when "borderColor";
             $key = 710 when "font";
             when ("geometry") {
                 if (my ($col, $row) = $resource{$_} =~ /(\d+)x(\d+)/) {
