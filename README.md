@@ -23,10 +23,7 @@ To reload the current terminal (will *only* work from the prompt):
 
 To reload all terminals
 
-    for term in $(pgrep urxvt); do
-        kill -s HUP $term
-    done
-
+    killall -SIGHUP urxvt
 
 ## Dependencies
 
