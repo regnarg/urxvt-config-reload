@@ -4,13 +4,8 @@ use v5.20;
 use common::sense;
 
 use AnyEvent;
-use Linux::FD qw(signalfd);
-use POSIX;
 use File::Basename qw(dirname);
 
-my $sigset = POSIX::SigSet->new(&POSIX::SIGHUP);
-sigprocmask(SIG_BLOCK, $sigset);
-my $sigfd = signalfd($sigset);
 my $libdir = dirname(__FILE__);
 
 our @terms = ();
@@ -54,11 +49,9 @@ RESOURCE:
     }
 }
 
-our $watch = AnyEvent->io (
-             fh   => $sigfd, # which file handle to check
-             poll => "r",     # which event to wait for ("r"ead data)
+our $watch = AnyEvent->signal (
+             signal => "HUP", # which event to wait for (SIGHUP)
              cb   => sub {    # what callback to execute
-                 sysread $sigfd, my $dummy, 4096;
                  reload_all;
              }
           );
