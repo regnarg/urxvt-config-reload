@@ -14,6 +14,7 @@ my $sigfd = signalfd($sigset);
 my $libdir = dirname(__FILE__);
 
 our @terms = ();
+my $cmd = "";
 
 sub reload_all {
     my @lines = `urxvt --perl-lib $libdir -pe config-print 2>&1`;
@@ -21,7 +22,6 @@ sub reload_all {
     for (@lines) {
         $resource{$1} = $2 if (/(.*?): (.*)/);
     }
-    my $cmd = "";
     my $i = 0;
 RESOURCE:
     for (keys %resource) {
@@ -66,6 +66,7 @@ our $watch = AnyEvent->io (
 sub on_start {
     my ($ext) = @_;
     # warn "START ext=$ext TERM=$TERM";
+    $TERM->cmd_parse($cmd);
     push @terms, $TERM;
     ();
 }
