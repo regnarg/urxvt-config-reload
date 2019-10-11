@@ -15,7 +15,15 @@ Currently only color, font and geometry settings are reloaded.
     another screen with a different DPI.
   * ... and much more!
 
-Example usage scripts might be added later.
+## Usage
+
+To reload the current terminal (will *only* work from the prompt):
+
+    kill -s HUP $(ps -p $$ -o ppid=)
+
+To reload all terminals
+
+    killall -SIGHUP urxvt
 
 ## Dependencies
 
@@ -32,12 +40,14 @@ You can install the needed packages with CPAN:
 
 ## Installation
 
-Copy the files into `~/.urxvt/ext/`. Add `config-reload` to the
-`URxvt.perl-ext-common` option in `Xresources`. E.g.:
+Copy the files into `~/.urxvt/ext/` (local) or `/usr/lib/urxvt/perl`
+(system-wide). Alternatively, add the folder path to your `.Xresources`:
+
+    URxvt.perl-lib: /your/folder/
+
+You must add `config-reload` to the `URxvt.perl-ext-common` resource in
+`Xresources`:
 
     URxvt.perl-ext-common: default,clipboard,...,config-reload
 
 **Do not** add the `config-print` extension there!
-
-See https://github.com/muennich/urxvt-perls#installation for alternative
-installation methods (system-wide etc.).
