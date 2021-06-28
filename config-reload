@@ -12,6 +12,7 @@ my $sigset = POSIX::SigSet->new(&POSIX::SIGHUP);
 sigprocmask(SIG_BLOCK, $sigset);
 my $sigfd = signalfd($sigset);
 my $libdir = dirname(__FILE__);
+our $config_cmd = "";
 
 our @terms = ();
 
@@ -59,10 +60,10 @@ sub build_command {
 
 sub reload_all {
     my %resources = get_xresources;
-    my $cmd = build_command(%resources);
+    $config_cmd = build_command(%resources);
     # warn "CMD: " . ($cmd =~ s/\e/\\e/gr =~ s/\a/\\a/gr);
     for (@terms) {
-        $_->cmd_parse($cmd);
+        $_->cmd_parse($config_cmd);
     }
 }
 
@@ -79,6 +80,7 @@ sub on_start {
     my ($ext) = @_;
     # warn "START ext=$ext TERM=$TERM";
     push @terms, $TERM;
+    $TERM->cmd_parse($config_cmd);
     ();
 }
 
