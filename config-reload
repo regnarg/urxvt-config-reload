@@ -19,8 +19,10 @@ sub get_xresources {
     my @entries = `xrdb -query`;
     my %resources;
     for (@entries) {
-        $resources{$2} = $3 if /^(URxvt)?\*([^:]+):\t+(.*)/;
+        $resources{$2} = $3 if /^(URxvt[.*]|\*)([^:]+):\t+(.*)/;
     }
+    $resources{borderColor} //= $resources{background};
+    $resources{cursorColor} //= $resources{foreground};
     return %resources;
 }
 
