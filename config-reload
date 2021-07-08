@@ -5,12 +5,12 @@ use common::sense;
 
 use AnyEvent;
 use Linux::FD qw(signalfd);
-use POSIX;
+use Fcntl qw(F_SETFL O_NONBLOCK);
 use File::Basename qw(dirname);
 
-my $sigset = POSIX::SigSet->new(&POSIX::SIGHUP);
-sigprocmask(SIG_BLOCK, $sigset);
-my $sigfd = signalfd($sigset);
+$SIG{HUP} = sub{};
+my $sigfd = signalfd('HUP');
+fcntl $sigfd, F_SETFL, O_NONBLOCK or warn "fcntl: $!";
 my $libdir = dirname(__FILE__);
 our $config_cmd = "";
 
