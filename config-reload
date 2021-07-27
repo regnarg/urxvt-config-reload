@@ -30,7 +30,7 @@ sub get_xresources {
             default { next };
         }
         # For "xyz.abc.key:" or "xyz*abc.key":, we only use "key"
-        $target->{$1} = $2 if /([^.*]+):\t+(.*)/;
+        $target->{$1} = $2 if /([^.*:]+):\t+(.*)/;
     }
 
     # Prefer explicit URxvt resources over wildcards.
