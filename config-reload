@@ -18,9 +18,24 @@ our @terms = ();
 
 sub get_xresources {
     my @entries = `xrdb -query`;
-    my %resources;
+    # urxvt_resources contains URxvt specific keys
+    my (%urxvt_resources, %resources);
     for (@entries) {
-        $resources{$2} = $3 if /^(URxvt[.*]|\*)([^:]+):\t+(.*)/;
+        my $target;
+        given ($_) {
+            # Resources of form "URxvt.abc" or "URxvt*abc"
+            $target = \%urxvt_resources when (/^URxvt[.*]/);
+            # Resources of form "*abc", "?.abc", "?*abc", "abc"
+            $target = \%resources when (/^[*?]/) || (/^[^.*?]:/);
+            default { next };
+        }
+        # For "xyz.abc.key:" or "xyz*abc.key":, we only use "key"
+        $target->{$1} = $2 if /([^.*:]+):\t+(.*)/;
+    }
+
+    # Prefer explicit URxvt resources over wildcards.
+    for (keys %urxvt_resources) {
+        $resources{$_} = $urxvt_resources{$_};
     }
     $resources{borderColor} //= $resources{background};
     $resources{cursorColor} //= $resources{foreground};
